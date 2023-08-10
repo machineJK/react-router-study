@@ -1,15 +1,21 @@
-import { Form } from "react-router-dom";
-import { ContactType, ContactProps } from "./allType";
+import { Form, useFetcher, useLoaderData } from "react-router-dom";
+import { ContactProps, RequestType } from "./allType";
+import { getContact, updateContact } from "./contact";
+
+export async function loader(parameters: RequestType) {
+  const contact = await getContact(parameters.params.contactId);
+  return { contact };
+}
+
+export async function action(parameters: RequestType) {
+  let formData = await parameters.request.formData();
+  return updateContact(parameters.params.contactId, {
+    favorite: formData.get("favorite") === "true",
+  });
+}
 
 export default function Contact(): JSX.Element {
-  const contact: ContactType = {
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/g/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+  const { contact } = useLoaderData() as ContactProps;
 
   return (
     <div id="contact">
@@ -61,11 +67,10 @@ export default function Contact(): JSX.Element {
 }
 
 function Favorite({ contact }: ContactProps): JSX.Element {
-  // yes, this is a `let` for later
-
+  const fetcher = useFetcher();
   let favorite = contact.favorite;
   return (
-    <Form method="post">
+    <fetcher.Form method="post">
       <button
         name="favorite"
         value={favorite ? "false" : "true"}
@@ -73,6 +78,6 @@ function Favorite({ contact }: ContactProps): JSX.Element {
       >
         {favorite ? "★" : "☆"}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 }

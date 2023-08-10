@@ -1,8 +1,11 @@
+import { Params } from "react-router-dom";
+
 export type ContactProps = {
     contact: ContactType
 }
 
 export type ContactType = {
+    id: string;
     first: string;
     last: string;
     avatar: string;
@@ -16,5 +19,7 @@ export type URLParamsType = {
 }
 
 export type RequestType = {
-    // context:
+    [key: string]: any,
+    params: Params,
+    request: Request
 }
