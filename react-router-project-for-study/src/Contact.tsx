@@ -1,9 +1,17 @@
 import { Form, useFetcher, useLoaderData } from "react-router-dom";
 import { ContactProps, RequestType } from "./allType";
 import { getContact, updateContact } from "./contact";
+import { useEffect } from "react";
 
 export async function loader(parameters: RequestType) {
   const contact = await getContact(parameters.params.contactId);
+  if (!contact) {
+    throw new Response("", {
+      status: 400,
+      statusText: "Not Found",
+    });
+  }
+
   return { contact };
 }
 
@@ -68,7 +76,12 @@ export default function Contact(): JSX.Element {
 
 function Favorite({ contact }: ContactProps): JSX.Element {
   const fetcher = useFetcher();
+  console.log(fetcher);
   let favorite = contact.favorite;
+  if (fetcher.formData) {
+    favorite = fetcher.formData.get("favorite") === "true";
+  }
+
   return (
     <fetcher.Form method="post">
       <button

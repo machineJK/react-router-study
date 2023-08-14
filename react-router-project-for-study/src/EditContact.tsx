@@ -9,6 +9,7 @@ import { getContact, updateContact } from "./contact";
 import { ContactProps, RequestType } from "./allType";
 
 export async function loader(parameters: RequestType) {
+  throw new Error("오류");
   const contact = await getContact(parameters.params.contactId);
   return { contact };
 }
